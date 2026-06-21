@@ -260,6 +260,15 @@ public class PeopleRepository(IDbContextFactory<JellyfinDbContext> dbProvider, I
             query = query.Where(e => e.BaseItems!.Any(w => w.ItemId.Equals(filter.AppearsInItemId)));
         }
 
+        var queryIncludeItemTypes = filter.IncludeItemTypes
+            .Where(itemTypeLookup.BaseItemKindNames.ContainsKey)
+            .Select(itemType => itemTypeLookup.BaseItemKindNames[itemType])
+            .ToArray();
+        if (queryIncludeItemTypes.Length > 0)
+        {
+            query = query.Where(e => e.BaseItems!.Any(w => queryIncludeItemTypes.Contains(w.Item.Type)));
+        }
+
         var queryPersonTypes = filter.PersonTypes.Where(IsValidPersonType).ToList();
         if (queryPersonTypes.Count > 0)
         {

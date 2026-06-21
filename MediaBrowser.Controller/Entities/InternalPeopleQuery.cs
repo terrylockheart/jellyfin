@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Jellyfin.Database.Implementations.Entities;
+using MediaBrowser.Model.Entities;
 
 namespace MediaBrowser.Controller.Entities
 {
@@ -39,6 +40,8 @@ namespace MediaBrowser.Controller.Entities
         public int? MaxListOrder { get; set; }
 
         public Guid AppearsInItemId { get; set; }
+
+        public BaseItemKind[] IncludeItemTypes { get; set; } = [];
 
         public string NameContains { get; set; }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Jellyfin.Api.Extensions;
 using Jellyfin.Api.Helpers;
 using Jellyfin.Api.ModelBinders;
+using Jellyfin.Data.Enums;
 using Jellyfin.Database.Implementations.Entities;
 using Jellyfin.Extensions;
 using MediaBrowser.Controller.Dto;
@@ -62,6 +63,7 @@ public class PersonsController : BaseJellyfinApiController
     /// <param name="enableImageTypes">Optional. The image types to include in the output.</param>
     /// <param name="excludePersonTypes">Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited.</param>
     /// <param name="personTypes">Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited.</param>
+    /// <param name="includeItemTypes">Optional. If specified results will be filtered to include only persons appearing in items of the specified BaseItemKind. Allows multiple, comma-delimited.</param>
     /// <param name="parentId">Optional. Specify this to localize the search to a specific library. Omit to use the root.</param>
     /// <param name="appearsInItemId">Optional. If specified, person results will be filtered on items related to said persons.</param>
     /// <param name="userId">User id.</param>
@@ -85,6 +87,7 @@ public class PersonsController : BaseJellyfinApiController
         [FromQuery, ModelBinder(typeof(CommaDelimitedCollectionModelBinder))] ImageType[] enableImageTypes,
         [FromQuery, ModelBinder(typeof(CommaDelimitedCollectionModelBinder))] string[] excludePersonTypes,
         [FromQuery, ModelBinder(typeof(CommaDelimitedCollectionModelBinder))] string[] personTypes,
+        [FromQuery, ModelBinder(typeof(CommaDelimitedCollectionModelBinder))] BaseItemKind[] includeItemTypes,
         [FromQuery] Guid? parentId,
         [FromQuery] Guid? appearsInItemId,
         [FromQuery] Guid? userId,
@@ -110,6 +113,7 @@ public class PersonsController : BaseJellyfinApiController
             User = user,
             IsFavorite = !isFavorite.HasValue && isFavoriteInFilters ? true : isFavorite,
             AppearsInItemId = appearsInItemId ?? Guid.Empty,
+            IncludeItemTypes = includeItemTypes,
             ParentId = parentId,
             StartIndex = startIndex,
             Limit = limit ?? 0

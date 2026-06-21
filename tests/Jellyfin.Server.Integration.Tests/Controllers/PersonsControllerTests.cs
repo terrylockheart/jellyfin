@@ -1,5 +1,8 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Querying;
 using Xunit;
 
 namespace Jellyfin.Server.Integration.Tests.Controllers;
@@ -22,5 +25,18 @@ public class PersonsControllerTests : IClassFixture<JellyfinApplicationFactory>
 
         using var response = await client.GetAsync($"Persons/DoesntExist", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetPersons_WithMovieItemType_Success()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.AddAuthHeader(_accessToken ??= await AuthHelper.CompleteStartupAsync(client));
+
+        using var response = await client.GetAsync("Persons?personTypes=Actor&includeItemTypes=Movie", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<QueryResult<BaseItemDto>>(TestContext.Current.CancellationToken);
+        Assert.NotNull(result);
     }
 }
